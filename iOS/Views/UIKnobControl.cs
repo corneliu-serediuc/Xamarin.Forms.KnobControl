@@ -23,6 +23,8 @@ namespace KnobControl.iOS
         private nfloat _innerRadius;
         private bool _showTouchPath;
 
+        public Action<nfloat> RotationEnded;
+
         public nfloat MaxValue {
             get { return _maxValue; }
             set { _maxValue = value; }
@@ -122,7 +124,11 @@ namespace KnobControl.iOS
                         {
                             // Rotate image and update text field
                             _handleImage.Transform = CGAffineTransform.MakeRotation(_imageAngle * ((float)Math.PI) / 180);
-                            _valueLabel.Text = Convert.ToInt32(_imageAngle.ToCurrentValue(_minValue, _maxValue)).ToString();
+                            _currentValue = _imageAngle.ToCurrentValue(_minValue, _maxValue);
+                            _valueLabel.Text = Convert.ToInt32(_currentValue).ToString();
+
+                            if (RotationEnded != null)
+                                RotationEnded(_currentValue);
                         });
             });
 
@@ -150,14 +156,22 @@ namespace KnobControl.iOS
                         {
                             // Rotate image and update text field
                             _handleImage.Transform = CGAffineTransform.MakeRotation(_imageAngle * ((float)Math.PI) / 180);
-                            _valueLabel.Text = Convert.ToInt32(_imageAngle.ToCurrentValue(_minValue, _maxValue)).ToString();
+                            _currentValue = _imageAngle.ToCurrentValue(_minValue, _maxValue);
+                            _valueLabel.Text = Convert.ToInt32(_currentValue).ToString();
+
+                            if (RotationEnded != null)
+                                RotationEnded(_currentValue);
                         });
                 };
 
             _gestureRecognizer.RotationEnded += (nfloat obj) =>
                 {
                     Console.WriteLine("CurrentValue = " + _imageAngle.ToCurrentValue(_minValue, _maxValue));
-                    _valueLabel.Text = Convert.ToInt32(_imageAngle.ToCurrentValue(_minValue, _maxValue)).ToString();
+                    _currentValue = _imageAngle.ToCurrentValue(_minValue, _maxValue);
+                    _valueLabel.Text = Convert.ToInt32(_currentValue).ToString();
+
+                    if (RotationEnded != null)
+                        RotationEnded(_currentValue);
                 };
            
             AddGestureRecognizer(_gestureRecognizer);

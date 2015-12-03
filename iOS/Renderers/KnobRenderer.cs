@@ -33,6 +33,14 @@ namespace KnobControl.iOS
             var frame = new CGRect((nfloat)Element.Bounds.X, (nfloat)Element.Bounds.Y, (nfloat)mainScreen.Height/2-20, (nfloat)mainScreen.Height/2-20);
             var knob = new UIKnobControl(frame, Element.Min, Element.Max, Element.Current, Element.ShowTouchPath);
 
+            knob.RotationEnded += (nfloat obj) =>
+            {
+                if(Element != null)
+                {
+                    Element.Current = (float)obj;
+                }
+            };
+
             SetNativeControl(knob);
         }
 
